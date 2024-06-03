@@ -6,29 +6,34 @@ const Cart = ({ cart, updateCart, removeFromCart }) => {
   };
 
   return (
-    <div>
-      <h1>Shopping Cart</h1>
-      <div className="cart">
+    <div className="container">
+      <h1 className="my-4">Shopping Cart</h1>
+      <div className="row">
         {cart.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
           cart.map(item => (
-            <div key={item.product.id} className="cart-item">
-              <img src={item.product.image} alt={item.product.name} />
-              <h2>{item.product.name}</h2>
-              <p>${item.product.price}</p>
-              <input
-                type="number"
-                value={item.quantity}
-                onChange={(e) => handleQuantityChange(item.product, parseInt(e.target.value))}
-                min="1"
-              />
-              <button onClick={() => removeFromCart(item.product)}>Remove</button>
+            <div key={item.product.id} className="col-md-4 mb-4">
+              <div className="card h-100">
+                <img src={item.product.image} className="card-img-top" alt={item.product.name} />
+                <div className="card-body">
+                  <h5 className="card-title">{item.product.name}</h5>
+                  <p className="card-text">${item.product.price}</p>
+                  <input
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) => handleQuantityChange(item.product, parseInt(e.target.value))}
+                    min="1"
+                    className="form-control mb-2"
+                  />
+                  <button onClick={() => removeFromCart(item.product)} className="btn btn-danger">Remove</button>
+                </div>
+              </div>
             </div>
           ))
         )}
-        {cart.length > 0 && <button onClick={() => alert('Purchase finalized!')}>Finalize Purchase</button>}
       </div>
+      {cart.length > 0 && <button onClick={() => alert('Purchase finalized!')} className="btn btn-success">Finalize Purchase</button>}
     </div>
   );
 };
