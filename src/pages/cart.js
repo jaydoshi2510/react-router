@@ -79,6 +79,7 @@ const Cart = ({ cart, updateCart, removeFromCart }) => {
             </div>
             <p>Total Cost: ${totalCost}</p>
             <button className="btn btn-primary" onClick={handleFinalizePurchase}>Finalize Purchase</button>
+            
         </div>
     );
 };
