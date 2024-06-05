@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Product1Image from '../pages/Clothing1.jpg';
 import Product2Image from '../pages/Clothing2.jpg';
 import Product3Image from '../pages/Clothing3.jpeg';
 import Product4Image from '../pages/Clothing4.jpg';
 import Product5Image from '../pages/Clothing5.jpg';
+import ProductModal from './ProductModal';
+import '../pages/product.css';
 
-const Clothing  = ({ addToCart }) => {
-  
+const Clothing = ({ addToCart }) => {
+  const [showPopup, setShowPopup] = useState(false); // State to manage pop-up visibility
+  const [quantities, setQuantities] = useState({
+    1: 1,
+    2: 1,
+    3: 1,
+    4: 1,
+    5: 1,
+  }); // State to manage quantities for each product, with default quantity set to 1
+
+  const [selectedProduct, setSelectedProduct] = useState(null); // State to manage selected product for modal
 
   const clothingProducts = [
     { id: 1, name: 'T-shirt', description: 'A comfortable cotton t-shirt.', image: Product1Image, price: 24.99 },
@@ -17,24 +27,54 @@ const Clothing  = ({ addToCart }) => {
     { id: 5, name: 'Hat', description: 'A trendy hat.', image: Product5Image, price: 19.99 },
   ];
 
+  const handleQuantityChange = (productId, quantity) => {
+    setQuantities({ ...quantities, [productId]: quantity });
+  };
+
+  const handleAddToCart = (product) => {
+    const quantity = quantities[product.id]; // No need to check if it exists since we set default to 1
+    addToCart({ ...product, quantity });
+    setShowPopup(true); // Show pop-up when a product is added to cart
+    setTimeout(() => setShowPopup(false), 2000); // Hide pop-up after 2 seconds
+  };
+
+  const handleShowDetails = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
   return (
     <div>
       <h2>Clothing</h2>
       {/* List of clothing products */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px', overflowX: 'auto' }}>
+      <div className="product-container">
         {clothingProducts.map((product) => (
-          <div key={product.id} style={{ width: '200px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', flexShrink: 0 }}>
-            <img src={product.image} alt={product.name} style={{ width: '100%', height: '150px', objectFit: 'cover', marginBottom: '10px' }} />
-            <h3 style={{ fontSize: '16px', height: '50px', margin: '0 0 10px 0' }}>{product.name}</h3>
-            <div style={{ height: '100px', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '10px' }}>
-              <p style={{ margin: '0' }}>{product.description}</p>
+          <div key={product.id} className="product-card">
+            <img src={product.image} alt={product.name} className="product-image" />
+            <h3 className="product-name">{product.name}</h3>
+            <div className="product-description">
+              <p>{product.description}</p>
             </div>
-            <p style={{ fontSize: '14px', margin: '10px 0' }}>${product.price}</p>
-            <button onClick={() => addToCart(product)} style={{ marginBottom: '10px', width: '100%', padding: '5px 0' }}>Add to Cart</button>
-            <Link to={`/product/clothing/${product.id}`} style={{ display: 'block', textDecoration: 'none', color: '#007bff' }}>Details</Link>
+            <p className="product-price">${product.price}</p>
+            <input type="number" value={quantities[product.id]} onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value))} className="product-quantity" />
+            <button onClick={() => handleAddToCart(product)} className="product-button">Add to Cart</button>
+            <button onClick={() => handleShowDetails(product)} className="details-button">Details</button>
           </div>
         ))}
       </div>
+      {/* Pop-up */}
+      {showPopup && (
+        <div className="popup">
+          Product added to cart!
+        </div>
+      )}
+      {/* Modal */}
+      {selectedProduct && (
+        <ProductModal product={selectedProduct} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

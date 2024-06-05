@@ -5,9 +5,14 @@ import Product2Image from '../pages/Electronics2.jpg';
 import Product3Image from '../pages/Electronics3.jpg';
 import Product4Image from '../pages/Electronics4.jpg';
 import Product5Image from '../pages/Electronics5.jpg';
+import ProductModal from './ProductModal';
+import '../pages/product.css';
 
 const Electronics = ({ addToCart }) => {
-  
+  const [showPopup, setShowPopup] = useState(false); // State to manage pop-up visibility
+  const [quantities, setQuantities] = useState({}); // State to manage quantities for each product
+  const [selectedProduct, setSelectedProduct] = useState(null); // State to manage selected product for modal
+
   const electronicsProducts = [
     { id: 1, name: 'Kindle e-reader', description: 'Amazon Kindle devices enable users to browse, buy, download, and read e-books, newspapers, magazines and other digital media via wireless networking to the Kindle Store.', image: Product1Image, price: 19.99 },
     { id: 2, name: 'Apple Watch Ultra', description: 'The Apple Watch Ultra hardware is generally similar to the main Apple Watch line (with the first-generation model based on Apple Watch Series 8), but is differentiated by their rugged titanium casing, a larger 49 mm band, and a larger display with a flat crystal and higher brightness of up to 2,000 nits.', image: Product2Image, price: 29.99 },
@@ -16,23 +21,55 @@ const Electronics = ({ addToCart }) => {
     { id: 5, name: 'DJI Mavic Air 2', description: 'The DJI Mavic Air 2 is a foldable drone that offers high-end performance with exceptional image quality and advanced flight modes.', image: Product5Image, price: 999.99 },
   ];
 
+  const handleQuantityChange = (productId, quantity) => {
+    setQuantities({ ...quantities, [productId]: quantity });
+  };
+
+  const handleAddToCart = (product) => {
+    const quantity = quantities[product.id] || 1; // Default quantity is 1 if not specified
+    addToCart({ ...product, quantity });
+    setShowPopup(true); // Show pop-up when a product is added to cart
+    setTimeout(() => setShowPopup(false), 2000); // Hide pop-up after 2 seconds
+  };
+
+  const handleShowDetails = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
   return (
     <div>
       <h2>Electronics</h2>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px', overflowX: 'auto' }}>
+      <div className="product-container">
         {electronicsProducts.map((product) => (
-          <div key={product.id} style={{ width: '200px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', flexShrink: 0 }}>
-            <img src={product.image} alt={product.name} style={{ width: '100%', height: '150px', objectFit: 'cover', marginBottom: '10px' }} />
-            <h3 style={{ fontSize: '16px', height: '50px', margin: '0 0 10px 0' }}>{product.name}</h3>
-            <div style={{ height: '100px', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '10px' }}>
-              <p style={{ margin: '0' }}>{product.description}</p>
-            </div>
-            <p style={{ fontSize: '14px', margin: '10px 0' }}>${product.price}</p>
-            <button onClick={() => addToCart(product)} style={{ marginBottom: '10px', width: '100%', padding: '5px 0' }}>Add to Cart</button>
-            <Link to={`/product/electronics/${product.id}`} style={{ display: 'block', textDecoration: 'none', color: '#007bff' }}>Details</Link>
+          <div key={product.id} className="product-card">
+            <Link to="#" onClick={() => handleShowDetails(product)} style={{ textDecoration: 'none', color: '#000' }}>
+              <img src={product.image} alt={product.name} className="product-image" />
+              <h3 className="product-name">{product.name}</h3>
+              <div className="product-description">
+                <p style={{ margin: '0' }}>{product.description}</p>
+              </div>
+              <p className="product-price">${product.price}</p>
+            </Link>
+            <input type="number" value={quantities[product.id] || 1} onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value))} style={{ width: '50px', marginBottom: '10px' }} />
+            <button onClick={() => handleAddToCart(product)} style={{ marginBottom: '10px', width: '100%', padding: '5px 0' }}>Add to Cart</button>
+            <button onClick={() => handleShowDetails(product)} className="details-button">Details</button>
           </div>
         ))}
       </div>
+      {/* Pop-up */}
+      {showPopup && (
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#007bff', color: '#fff', padding: '20px', borderRadius: '5px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)' }}>
+          Product added to cart!
+        </div>
+      )}
+      {/* Modal */}
+      {selectedProduct && (
+        <ProductModal product={selectedProduct} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

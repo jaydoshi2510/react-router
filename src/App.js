@@ -8,9 +8,10 @@ import Electronics from './pages/Electronics';
 import Clothing from './pages/Clothing'; 
 import Books from './pages/Books'; 
 
+
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [account, setAccount] = useState({ name: '', address: '' });
+  const [setAccount] = useState({ name: '', address: '' });
 
   const addToCart = (product, quantity) => {
     const existingItem = cartItems.find(item => item.product.id === product.id);

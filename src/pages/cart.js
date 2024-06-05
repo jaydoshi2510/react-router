@@ -42,7 +42,7 @@ const Cart = ({ cart, updateCart, removeFromCart }) => {
         <div>
             <h2>Shopping Cart</h2>
             {isPopupVisible && (
-                <div className="popup">
+                <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#007bff', color: '#fff', padding: '20px', borderRadius: '5px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)' }}>
                     <p>Your purchase has been finalized!</p>
                 </div>
             )}

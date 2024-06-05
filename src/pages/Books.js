@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Book1Image from '../pages/Book1.jpg';
 import Book2Image from '../pages/Book2.jpg';
 import Book3Image from '../pages/Book3.jpg';
 import Book4Image from '../pages/Book4.jpg';
 import Book5Image from '../pages/Book5.jpg';
+import ProductModal from './ProductModal';
+import '../pages/product.css';
 
-const Books  = ({ addToCart }) => {
+const Books = ({ addToCart }) => {
+  const [showPopup, setShowPopup] = useState(false); // State to manage pop-up visibility
+  const [cart, setCart] = useState({}); // State to manage the quantity of products in the cart
+  const [selectedProduct, setSelectedProduct] = useState(null); // State to manage selected product for modal
 
   const bookProducts = [
     { id: 1, name: 'Thats The Way We Met', description: 'Aditya and Riya could never imagine life without each other. Since their accidental meeting two years ago, they have been inseparable until an unexpected tragedy promises to change the course of their lives forever.', image: Book1Image, price: 19.99 },
@@ -15,6 +19,29 @@ const Books  = ({ addToCart }) => {
     { id: 4, name: 'Things Fall Apart', description: 'Things Fall Apart is the debut novel of Nigerian author Chinua Achebe, first published in 1958. It depicts the events of pre-colonial life in Igboland, a cultural area in modern-day southeastern Nigeria, and the subsequent appearance of European missionaries and colonial forces in the late 19th century.', image: Book4Image, price: 22.99 },
     { id: 5, name: '1984', description: 'ineteen Eighty-Four is a dystopian novel and cautionary tale by English writer George Orwell. It was published on 8 June 1949 by Secker & Warburg as Orwells ninth and final book completed in his lifetime.', image: Book5Image, price: 17.99 },
   ];
+
+  const handleAddToCart = (product, quantity) => {
+    const updatedCart = { ...cart };
+    updatedCart[product.id] = quantity;
+    setCart(updatedCart);
+    addToCart(product, quantity);
+    setShowPopup(true); // Show pop-up when a product is added to cart
+    setTimeout(() => setShowPopup(false), 2000); // Hide pop-up after 2 seconds
+  };
+
+  const handleChangeQuantity = (product, quantity) => {
+    const updatedCart = { ...cart };
+    updatedCart[product.id] = quantity;
+    setCart(updatedCart);
+  };
+
+  const handleShowDetails = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
 
   return (
     <div>
@@ -29,11 +56,24 @@ const Books  = ({ addToCart }) => {
               <p style={{ margin: '0' }}>{product.description}</p>
             </div>
             <p style={{ fontSize: '14px', margin: '10px 0' }}>${product.price}</p>
-            <button onClick={() => addToCart(product)} style={{ marginBottom: '10px', width: '100%', padding: '5px 0' }}>Add to Cart</button>
-            <Link to={`/product/books/${product.id}`}>Details</Link>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+              <input type="number" min="1" value={cart[product.id] || 1} onChange={(e) => handleChangeQuantity(product, parseInt(e.target.value))} style={{ width: '50px', textAlign: 'center', marginRight: '5px' }} />
+              <button onClick={() => handleAddToCart(product, cart[product.id] || 1)} style={{ padding: '5px 10px' }}>Add to Cart</button>
+            </div>
+            <button onClick={() => handleShowDetails(product)} style={{ padding: '5px 10px' }}>Details</button>
           </div>
         ))}
       </div>
+      {/* Pop-up */}
+      {showPopup && (
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#007bff', color: '#fff', padding: '20px', borderRadius: '5px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)' }}>
+          Product added to cart!
+        </div>
+      )}
+      {/* Modal */}
+      {selectedProduct && (
+        <ProductModal product={selectedProduct} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
